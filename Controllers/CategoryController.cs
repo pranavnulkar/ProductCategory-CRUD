@@ -1,4 +1,5 @@
 ﻿using ProductCategory.Models;
+using ProductCategory.Service;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
@@ -7,12 +8,16 @@ namespace ProductCategory.Controllers
 {
     public class CategoryController : Controller
     {
-        private ProductCategoryContext _context=new ProductCategoryContext();
+        private ICategoryService _categoryService;
+        public CategoryController()
+        {
+            _categoryService = new CategoryService();
+        }
 
-        // GET: Category
         public ActionResult Index()
         {
-            return View(_context.Categories.ToList());
+            var categories = _categoryService.GetAllCategories();
+            return View(categories);
         }
 
         // GET: Category/Create
@@ -28,21 +33,17 @@ namespace ProductCategory.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Categories.Add(category);
-                _context.SaveChanges();
+                _categoryService.AddCategory(category);
                 return RedirectToAction("Index");
             }
             return View(category);
         }
 
+
         // GET: Category/Edit/id
-        public ActionResult Edit(int? id) 
+        public ActionResult Edit(int id) 
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            var category = _context.Categories.Find(id);
+            var category = _categoryService.GetCategoryById(id);
             if (category == null)
             {
                 return HttpNotFound();                
@@ -57,21 +58,16 @@ namespace ProductCategory.Controllers
         {
             if (ModelState.IsValid) 
             {
-                _context.Entry(category).State=System.Data.Entity.EntityState.Modified;
-                _context.SaveChanges();
+                _categoryService.UpdateCategory(category);
                 return RedirectToAction("Index");
             }
             return View(category);
         }
 
         // GET: Category/Delete/id
-        public ActionResult Delete(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            var category= _context.Categories.Find(id);
+        public ActionResult Delete(int id)
+        {           
+            var category= _categoryService.GetCategoryById(id);
             if(category == null)
             {
                 return HttpNotFound();
@@ -84,17 +80,8 @@ namespace ProductCategory.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            var category = _context.Categories.Find(id);
-            _context.Categories.Remove(category);
-            _context.SaveChanges();
+            _categoryService.DeleteCategory(id);
             return RedirectToAction("Index");
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-                _context.Dispose();    //close database connection and free the resources
-            base.Dispose(disposing);
         }
     }
 }
