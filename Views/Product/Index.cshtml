@@ -1,0 +1,65 @@
+﻿@model IEnumerable<ProductCategory.Models.Product>
+
+<h2>Product List</h2>
+
+<p>@Html.ActionLink("Create New", "Create")</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>ProductId</th>
+            <th>ProductName</th>
+            <th>CategoryId</th>
+            <th>CategoryName</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.ProductId</td>
+                <td>@item.ProductName</td>
+                <td>@item.CategoryId</td>
+                <td>@(item.Category !=null ? item.Category.CategoryName : "No Category")</td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { id = item.ProductId }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = item.ProductId })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@{
+    ViewBag.Title = "Product List";
+    int currentPage = ViewBag.CurrentPage;
+    int pageSize = ViewBag.PageSize;
+    int totalRecords = ViewBag.TotalRecords;
+    int totalPages = (int)Math.Ceiling((double)totalRecords / pageSize);
+}
+@*@if (totalPages > 1)
+            {
+                <nav>
+                    <ul class="pagination">
+                        @for (int i = 1; i <= totalPages; i++)
+                        {
+                            <li class="@(i == currentPage ? "active" : "")">
+                                <a href="@Url.Action("Index", new { page = i, pageSize = pageSize })">@i</a>
+                            </li>
+                        }
+                    </ul>
+                </nav>
+            }*@
+
+<div>
+    @if (currentPage > 1)
+    {
+        @Html.ActionLink("Previous", "Index", new { page = currentPage - 1, pageSize = pageSize })
+    }
+    Page @currentPage of @totalPages
+    @if (currentPage < totalPages)
+    {
+        @Html.ActionLink("Next", "Index", new { page = currentPage + 1, pageSize = pageSize })
+    }
+</div>

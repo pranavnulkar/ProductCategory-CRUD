@@ -1,0 +1,20 @@
+﻿@model ProductCategory.Models.Category
+@{
+    ViewBag.Title = "Create Category";
+}
+
+<h2>Create Category</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.CategoryName)
+        @Html.TextBoxFor(model => model.CategoryName, new { @class = "form-control" })
+    </div>
+
+    <button type="submit" class="btn btn-success">Create</button>
+}
+<br>
+@Html.ActionLink("Back to List", "Index")
